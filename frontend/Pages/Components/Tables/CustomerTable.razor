@@ -1,0 +1,101 @@
+﻿@using frontend.Data
+@using frontend.Data.Contracts
+@using frontend.Models
+
+
+@if (Customers == null)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else
+{
+    <MudDataGrid T="Customer" MultiSelection="true" Items="@Customers" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
+                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged" Height="720px">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Cutomers</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" aria-label="add"></MudIconButton>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="Customer" />
+            <PropertyColumn Property="x => x.FirstName" Title="First Name" Sortable="true" Filterable="true" />
+            <PropertyColumn Property="x => x.LastName" Title="Last Name" Sortable="true" Filterable="true" />
+            <PropertyColumn Property="x => x.Email" SortBy="@_sortBy" Sortable="true" Filterable="true" />
+
+            <PropertyColumn Property="x => x.Phone" Title="Phone" Sortable="true" Filterable="true" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudStack Row>
+                     
+                     <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Details</MudButton>
+                 </MudStack>
+             </CellTemplate>
+         </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Customer" />
+        </PagerContent>
+    </MudDataGrid>
+}
+
+
+
+
+@code {
+    [Inject]
+    public ICustomerRepo CustomerRepo { get; set; }
+
+    public IEnumerable<Customer> Customers { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Customers = await CustomerRepo.GetAllCustomers();
+    }
+    
+    private string _searchString;
+    private string _search;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    // custom sort by name length
+    private Func<Customer, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.FirstName.Length;
+        else
+            return x.FirstName;
+    };
+    // quick filter - filter globally across multiple columns with the same input
+    private Func<Customer, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.FirstName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.LastName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+     
+
+        return false;
+    };
+
+    
+
+    // events
+    void RowClicked(DataGridRowClickEventArgs<Customer> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+    
+    void RowRightClicked(DataGridRowClickEventArgs<Customer> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<Customer> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+}

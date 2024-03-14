@@ -1,0 +1,18 @@
+﻿<MudPaper Width="250px" Elevation="0">
+    <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Class="pa-2">
+        <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix" Href="/customers" Icon="@Icons.Material.Filled.People">Customers</MudNavLink>
+        <MudNavLink Href="/thelab" Icon="@Icons.Material.Filled.CarRental">Cars</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
