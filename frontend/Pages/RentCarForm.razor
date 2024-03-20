@@ -1,4 +1,5 @@
 ﻿@page "/car/rent/{CarId:int}"
+@using Shared.Models
 @using frontend.Data.Contracts
 @using frontend.Models
 @using frontend.Pages.Components.Dialogs
@@ -11,7 +12,10 @@
                 <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.CarRental" ContentAlignment="HorizontalAlignment.Center">Car Id @CarId</MudAlert>
 
                 </MudItem>
+            <MudItem sm="8">
+                <MudDatePicker Label="Basic example" @bind-Date="Rental.RentalDate" />
 
+            </MudItem>
             <MudItem sm="6">
                 <MudTextField @bind-Value="Car.Make" Label="Brand" Variant="Variant.Outlined"></MudTextField>
 
@@ -69,6 +73,7 @@
             <MudTextField @bind-Value="Customer.Country" ReadOnly="@readOnly" InputType="InputType.Text" Label="Country" Variant="Variant.Outlined"></MudTextField>
         </MudItem>
     </MudGrid>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="RentAsync">Rent</MudButton>
 </MudContainer>
 
 @code {
@@ -77,12 +82,15 @@
     [Inject]
     public ICarsRepo CarRepo { get; set; }
     [Inject]
+    public IRentRepo RentRepo { get; set; }
+    [Inject]
     public ICustomerRepo CustomerRepo { get; set; }
     [Inject]
     public IDialogService DialogService { get; set; }
     bool readOnly = true;
     public Customer Customer { get; set; } = new Customer();
     public Car Car { get; set; }
+    public Rental Rental { get; set; } = new Rental();
 
     private string value1, value2;
     protected override async Task OnInitializedAsync()
@@ -103,4 +111,12 @@
             StateHasChanged();
         }
     }
+    async Task RentAsync()
+    {
+        Rental.RentalId = Helpers.IdGenerator.GenerateId();
+        Rental.Car = Car;
+        Rental.Customer =Customer;
+        await RentRepo.RentCarAsync(Rental);
+    }
+
 }

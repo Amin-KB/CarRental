@@ -1,0 +1,66 @@
+﻿@using frontend.Data.Contracts
+@using frontend.Models
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+
+            Please Enter KilometersDriven and ReturnDate
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+          
+      <MudItem sm="6">
+                <MudNumericField @bind-Value="IntValue" Label="Kilometer" Variant="Variant.Text" />
+      </MudItem>
+            <MudItem sm="6">
+                <MudDatePicker Label="ReturnDate" @bind-Date="date" />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+    
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Info" OnClick="ReturnAsync">Return</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [Inject]
+    public IRentRepo RentRepo { get; set; }
+    [Parameter]
+    public Rental Rental { get; set; }
+    public int IntValue { get; set; }
+    public int Kilometer { get; set; }
+    DateTime? date = DateTime.Today;
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    bool readOnlySwitch = false;
+    bool readOnly => !readOnlySwitch;
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+    async Task ReturnAsync()
+    {
+        Rental.KilometersDriven = IntValue;
+        Rental.ReturnDate = date;
+        var result = await RentRepo.ReturnCarAsync(Rental);
+
+        if (result.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Car Returned", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+    private void Cancel()
+    {
+
+        MudDialog.Cancel();
+    }
+}

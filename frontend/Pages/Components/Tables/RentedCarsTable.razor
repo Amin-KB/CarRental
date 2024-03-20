@@ -1,0 +1,51 @@
+﻿@using frontend.Data.Contracts
+@using frontend.Models
+@using frontend.Pages.Components.Dialogs
+
+@if (Cars != null)
+{
+    <MudDataGrid Items="@Cars" T="Rental">
+        <Columns>
+            <PropertyColumn Property="x => x.RentalId" Title="RentalId" />
+            <PropertyColumn Property="x => x.RentalDate" Title="Rent Date" />
+            <PropertyColumn Property="x => x.Car.Model" Title="Car Model" />
+            <PropertyColumn Property="x => x.Customer.FirstName" Title="Customer First Name" />
+            <PropertyColumn Property="x => x.Customer.LastName" Title="Customer Last Name" />
+            <PropertyColumn Property="x => x.Customer.Email" Title="Customer Email" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudStack Row>
+
+                     <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="()=>ReturnDialog(context.Item)">Return</MudButton>
+                 </MudStack>
+             </CellTemplate>
+         </TemplateColumn>
+     </Columns>
+ </MudDataGrid>
+}
+
+
+@code {
+    [Inject]
+    public IRentRepo RentRepo { get; set; }
+    public IEnumerable<Rental> Cars { get; set; } = new List<Rental>();
+    [Inject]
+    public IDialogService DialogService { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        Cars = await RentRepo.GetAllRentedCarsAsync();
+    }
+    async void ReturnDialog(Rental rental)
+    {
+        var parameters = new DialogParameters<ReturnCarDialog> { { x => x.Rental, rental } };
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<ReturnCarDialog>("Return Car", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Cars = await RentRepo.GetAllRentedCarsAsync();
+            StateHasChanged();
+        }
+    }
+}

@@ -6,4 +6,6 @@ namespace Backend.Contracts;
 public interface IRentRepo
 {
     Task<bool> RentCarAsync(Rental rental);
+    Task<bool> ReturnCarAsync(Rental rental);
+    Task<List<RentalDto>> GetRentedCarsAsync();
 }

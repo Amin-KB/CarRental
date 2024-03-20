@@ -11,6 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddSingleton<ICustomerRepo,CustomerRepo>();
 builder.Services.AddSingleton<ICarsRepo,CarRepo>();
+builder.Services.AddSingleton<IRentRepo, RentRepo>();
 builder.Services.AddMudServices();
 
 

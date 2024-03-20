@@ -76,4 +76,44 @@ public class CarRepo:Repository<Car>,ICarRepo
             return false;
         }
     }
+
+    public async Task<bool> ChangeRentalStatus(bool status,int carId)
+    {
+        try
+        {
+            var entity = await DbSet.FirstOrDefaultAsync(x => x.CarId == carId);
+            if (entity != null)
+            {
+                entity.RentalStatus = status;
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+    }
+
+    public async Task<bool> ChangeCarMileage(int kilometerDriven,int carId)
+    {
+        try
+        {
+            var entity = await DbSet.FirstOrDefaultAsync(x => x.CarId == carId);
+            if (entity != null)
+            {
+                entity.Mileage =  entity.Mileage+kilometerDriven;
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+    }
 }

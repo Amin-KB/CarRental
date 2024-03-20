@@ -1,16 +1,8 @@
-﻿namespace Backend.Models.Dtos;
+﻿using Shared.Models;
 
-public class CarDto
+namespace Backend.Models.Dtos;
+
+public class CarDto:CarEntity
 {
-    public int CarId { get; set; }
-
-    public string? Make { get; set; }
-
-    public string? Model { get; set; }
-
-    public int? Year { get; set; }
-
-    public int? Mileage { get; set; }
-
-    public bool? RentalStatus { get; set; }
+  
 }

@@ -19,4 +19,5 @@ public class CustomerEntity
     public string? Postal { get; set; }
 
     public string? Region { get; set; }
+    public string? Country { get; set; }
 }
