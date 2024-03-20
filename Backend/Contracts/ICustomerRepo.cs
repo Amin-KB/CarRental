@@ -8,5 +8,6 @@ namespace Backend.Contracts
     /// <typeparam name="Customer">The type of entity for the customer repository.</typeparam>
     public interface ICustomerRepo:IRepository<Customer>
     {
+        
     }
 }

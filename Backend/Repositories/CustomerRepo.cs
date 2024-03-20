@@ -49,6 +49,7 @@ namespace Backend.Repositories
             }
         }
 
+      
         /// <summary>
         /// Updates the customer entity in the database based on the provided Customer object.
         /// </summary>

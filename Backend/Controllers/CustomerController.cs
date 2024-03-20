@@ -13,10 +13,12 @@ namespace Backend.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public CustomerController(IUnitOfWork unitOfWork,IMapper mapper)
+        private readonly ILogger<CustomerController> _logger;
+        public CustomerController(IUnitOfWork unitOfWork,IMapper mapper,ILogger<CustomerController> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
@@ -24,6 +26,13 @@ namespace Backend.Controllers
             var _data=await _unitOfWork.CustomerRepo.GetEntitiesAsync();
             var custommers = _mapper.Map<List<CustomerDto>>(_data);
             return Ok(custommers);
+        }
+        [HttpGet("/rentalhistory/{id}")]
+        public async Task<IActionResult> RentalHistory(int id)
+        {
+            var data=await _unitOfWork.RentRepo.GetCustomerRentalHistory(id);
+     
+            return Ok(data);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id)

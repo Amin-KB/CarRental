@@ -34,45 +34,33 @@ public class RentRepo : IRentRepo
         }
     }
 
+    /// <summary>
+    /// Gets a list of rented cars for a given customer.
+    /// </summary>
+    /// <param name="customerId">The ID of the customer.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of Rental objects if the customer has rented cars, otherwise null.</returns>
+    public async Task<List<CustomerRentHistory>> GetCustomerRentalHistory(int customerId)
+   {
+    var rentHistory=await _dbContext.Rentals.Where(x => x.CustomerId == customerId).ToListAsync();
+    if (rentHistory != null)
+    {
+        return rentHistory.Select(rental => new CustomerRentHistory
+        {
+         
+            RentalId = rental.RentalId,
+            CarId =(int)rental.CarId,
+            RentalDate = rental.RentalDate,
+            ReturnDate = rental.ReturnDate,
+            KilometersDriven = rental.KilometersDriven
+        }).ToList();
+    }
+      
+    else
+        return null;
+   }
    public async Task<List<RentalDto>> GetRentedCarsAsync()
    {
-     // return _dbContext.Rentals.Include(x => x.Customer).Include(x => x.Car).ToList();
-     var query = (from r in _dbContext.Rentals
-         join cu in _dbContext.Customers on r.CustomerId equals cu.CustomerId
-         join ca in _dbContext.Cars on r.CarId equals ca.CarId
-        select new RentalDto()
-         {
-             RentalId = r.RentalId,
-             RentalDate = r.RentalDate,
-             ReturnDate = r.ReturnDate,
-             KilometersDriven = r.KilometersDriven,
-             Car = new CarDto()
-             {
-                 CarId = ca.CarId,
-                  Make = ca.Make,
-                  Model = ca.Model,
-                  Year = ca.Year,
-                 Mileage = ca.Mileage,
-                 RentalStatus = ca.RentalStatus
-             },
-             Customer = new CustomerDto()
-             {
-                 CustomerId = cu.CustomerId,
-                 FirstName = cu.FirstName,
-                 LastName = cu.LastName,
-                 Email = cu.Email,
-                 Phone = cu.Phone,
-                 Address = cu.Address,
-                 City = cu.City,
-                 Postal = cu.Postal,
-                 Region = cu.Region,
-                 Country = cu.Country
-                 
-             }
-             
-                 
-         }).ToList();
-     return query;
+       return await Helpers.ViewModelHelper.MapRentalDto(_dbContext);
    }
 
     public async Task<bool> ReturnCarAsync(Rental rental)

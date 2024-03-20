@@ -11,38 +11,64 @@ public class CarController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public CarController(IUnitOfWork unitOfWork,IMapper mapper)
+    private readonly ILogger<CarController> _logger;
+    public CarController(IUnitOfWork unitOfWork,IMapper mapper,ILogger<CarController> logger)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _logger = logger;
     }
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     {
-        var _data = await _unitOfWork.CarRepo.GetEntitiesAsync();
-        var custommers = _mapper.Map<List<CarDto>>(_data);
-        return Ok(custommers);
+        _logger.LogInformation("Request started (GetAllAsync)");
+        var data = await _unitOfWork.CarRepo.GetEntitiesAsync();
+        _logger.LogInformation($"{data.Count()} car has been found ");
+        var cars = _mapper.Map<List<CarDto>>(data);
+        return Ok(cars);
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(int id)
     {
-        var _data=await _unitOfWork.CarRepo.GetEntityByIdAsync(id);
-        var car = _mapper.Map<CarDto>(_data);
+        _logger.LogInformation("Request started (GetAsync)");
+        var data=await _unitOfWork.CarRepo.GetEntityByIdAsync(id);
+        if (data == null)
+        {
+            _logger.LogError("no car with id {id} exists");
+            return new NotFoundResult();
+        }
+        _logger.LogInformation(" car with id {id} has been found");
+        var car = _mapper.Map<CarDto>(data);
         return Ok(car);
     }
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody]CarDto dto)
     {
+        _logger.LogInformation("Request started (CreateAsync)");
         var car = _mapper.Map<Car>(dto);
         var result = await _unitOfWork.CarRepo.CreateEntityAsync(car);
+        if (result != true)
+        {
+            _logger.LogError("no car with id {id} could be created");
+            return BadRequest();
+        }
         await _unitOfWork.CompleteAsync();
+        _logger.LogInformation(" car with id {id} has been created");
         return Ok(result);
     }
     [HttpPut]
     public async Task<IActionResult> UpdateAsync(CarDto dto)
     {
+        _logger.LogInformation("Request started (UpdateAsync)");
         var car = _mapper.Map<Car>(dto);
         var result = await _unitOfWork.CarRepo.UpdateEntityAsync(car);
+        if (result != true)
+        {
+            _logger.LogError("car with id {id} could be updated");
+            return BadRequest();
+        }
+        await _unitOfWork.CompleteAsync();
+        _logger.LogInformation(" car with id {id} has been updated");
         return Ok(result);
     }
 }
