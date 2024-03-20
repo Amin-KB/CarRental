@@ -57,16 +57,7 @@ public class CarRepo:Repository<Car>,ICarRepo
     {
         try
         {
-            var entity = await DbSet.FirstOrDefaultAsync(x => x.CarId == car.CarId);
-            if (entity != null)
-            {
-                entity.Make = car.Make;
-                entity.Mileage = car.Mileage;
-                entity.Year = car.Year;
-                entity.Mileage = car.Mileage;
-                entity.RentalStatus = car.RentalStatus;
-                return true;
-            }
+            return await TryUpdateEntityAsync(car);
 
             return false;
         }
@@ -77,6 +68,39 @@ public class CarRepo:Repository<Car>,ICarRepo
         }
     }
 
+    /// <summary>
+    /// Tries to update the specified car entity in the database.
+    /// </summary>
+    /// <param name="car">The car entity to update.</param>
+    /// <returns>
+    /// Returns a task with a boolean value indicating whether the update operation was successful.
+    /// The task will have a value of true if the car entity was found and updated, otherwise it will have a value of false.
+    /// </returns>
+    private async Task<bool> TryUpdateEntityAsync(Car car)
+    {
+        var databaseCar = await DbSet.FirstOrDefaultAsync(x => x.CarId == car.CarId);
+        if (databaseCar != null)
+        {
+            databaseCar.Make = car.Make;
+            databaseCar.Mileage = car.Mileage;
+            databaseCar.Year = car.Year;
+            databaseCar.Mileage = car.Mileage;
+            databaseCar.RentalStatus = car.RentalStatus;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Changes the rental status of a car.
+    /// </summary>
+    /// <param name="status">The new rental status to be set.</param>
+    /// <param name="carId">The ID of the car.</param>
+    /// <returns>
+    /// A task with a boolean value indicating whether the rental status of the car was successfully changed or not.
+    /// <br />True: Rental status changed successfully.
+    /// <br />False: An error occurred or the car was not found.
+    /// </returns>
     public async Task<bool> ChangeRentalStatus(bool status,int carId)
     {
         try
@@ -97,6 +121,39 @@ public class CarRepo:Repository<Car>,ICarRepo
         }
     }
 
+    /// <summary>
+    /// Updates the status and mileage of a car.
+    /// </summary>
+    /// <param name="status">The new status of the car.</param>
+    /// <param name="kilometerDriven">The number of kilometers driven by the car.</param>
+    /// <param name="carId">The ID of the car to update.</param>
+    /// <returns>Returns true if the update was successful, or false if there was an error or the car does not exist.</returns>
+    public async   Task<bool> UpdateCarStatusAndMileage(bool status, int kilometerDriven, int carId)
+    {
+        try
+        {
+            var entity = await DbSet.FirstOrDefaultAsync(x => x.CarId == carId);
+            if (entity != null)
+            {
+                entity.RentalStatus = status;
+                entity.Mileage = + kilometerDriven;
+                return true;
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Changes the mileage of a car based on the kilometers driven.
+    /// </summary>
+    /// <param name="kilometerDriven">The number of kilometers driven.</param>
+    /// <param name="carId">The ID of the car.</param>
+    /// <returns>Returns a boolean value indicating whether the mileage was successfully changed or not.</returns>
     public async Task<bool> ChangeCarMileage(int kilometerDriven,int carId)
     {
         try
@@ -104,7 +161,7 @@ public class CarRepo:Repository<Car>,ICarRepo
             var entity = await DbSet.FirstOrDefaultAsync(x => x.CarId == carId);
             if (entity != null)
             {
-                entity.Mileage =  entity.Mileage+kilometerDriven;
+                entity.Mileage =  +kilometerDriven;
                 return true;
             }
 

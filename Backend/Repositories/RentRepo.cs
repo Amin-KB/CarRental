@@ -8,20 +8,36 @@ namespace Backend.Repositories;
 
 public class RentRepo : IRentRepo
 {
-   
+    /// <summary>
+    /// The database context for car rental operations.
+    /// </summary>
     protected CarRentalContext _dbContext;
+
+    /// <summary>
+    /// Gets or sets the internal <see cref="DbSet{TEntity}"/> for rentals.
+    /// </summary>
+    /// <value>
+    /// The internal <see cref="DbSet{TEntity}"/> for rentals.
+    /// </value>
     internal DbSet<Rental> DbSet { get; set; }
 
     public RentRepo(CarRentalContext dbContext)
     {
         _dbContext = dbContext;
-       
+
         DbSet = _dbContext.Set<Rental>();
     }
 
+    /// <summary>
+    /// Asynchronously adds a rental to the database.
+    /// </summary>
+    /// <param name="rental">The rental object to be added.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation.
+    /// It returns true if the rental is successfully added to the database; otherwise, false.
+    /// </returns>
     public async Task<bool> RentCarAsync(Rental rental)
     {
-       
         try
         {
             await DbSet.AddAsync(rental);
@@ -40,48 +56,51 @@ public class RentRepo : IRentRepo
     /// <param name="customerId">The ID of the customer.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of Rental objects if the customer has rented cars, otherwise null.</returns>
     public async Task<List<CustomerRentHistory>> GetCustomerRentalHistory(int customerId)
-   {
-    var rentHistory=await _dbContext.Rentals.Where(x => x.CustomerId == customerId).ToListAsync();
-    if (rentHistory != null)
     {
-        return rentHistory.Select(rental => new CustomerRentHistory
-        {
-         
-            RentalId = rental.RentalId,
-            CarId =(int)rental.CarId,
-            RentalDate = rental.RentalDate,
-            ReturnDate = rental.ReturnDate,
-            KilometersDriven = rental.KilometersDriven
-        }).ToList();
+        List<CustomerRentHistory> rentHistory = await _dbContext.Rentals
+            .Where(x => x.CustomerId == customerId)
+            .Select(rental => new CustomerRentHistory
+            {
+                RentalId = rental.RentalId,
+                CarId = (int)rental.CarId,
+                RentalDate = rental.RentalDate,
+                ReturnDate = rental.ReturnDate,
+                KilometersDriven = rental.KilometersDriven
+            })
+            .ToListAsync();
+
+        return rentHistory;
     }
-      
-    else
-        return null;
-   }
-   public async Task<List<RentalDto>> GetRentedCarsAsync()
-   {
-       return await Helpers.ViewModelHelper.MapRentalDto(_dbContext);
-   }
 
+    public async Task<List<RentalDto>> GetRentedCarsAsync()
+    {
+        return await Helpers.ViewModelHelper.MapRentalDto(_dbContext);
+    }
+
+    /// <summary>
+    /// Returns a rented car by setting the return date and kilometers driven.
+    /// </summary>
+    /// <param name="rental">The rental object representing the rented car.</param>
+    /// <returns>A task representing the asynchronous operation. The task result is True if the car is successfully returned, False otherwise.</returns>
     public async Task<bool> ReturnCarAsync(Rental rental)
-   {
-       try
-       {
-           var entity = await DbSet.FirstOrDefaultAsync(x => x.RentalId == rental.RentalId);
-           if (entity != null)
-           {
-               entity.ReturnDate = rental.ReturnDate;
-               entity.KilometersDriven = rental.KilometersDriven;
+    {
+        try
+        {
+            var entity = await DbSet.FirstOrDefaultAsync(x => x.RentalId == rental.RentalId);
+            if (entity == null)
+            {
+                Console.WriteLine("Entity is not found");
+                return false;
+            }
 
-               return true;
-           }
-
-           return false;
-       }
-       catch (Exception e)
-       {
-           Console.WriteLine(e);
-           return false;
-       }
-   }
+            entity.ReturnDate = rental.ReturnDate;
+            entity.KilometersDriven = rental.KilometersDriven;
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Backend.Models;
+using Backend.Models.Dtos;
 
 namespace Backend.Contracts;
 
@@ -9,5 +10,7 @@ public interface ICarRepo:IRepository<Car>
 {
     Task<bool> ChangeRentalStatus(bool status,int carId);
     Task<bool> ChangeCarMileage(int kilometerDriven,int carId);
+   Task<bool> UpdateCarStatusAndMileage(bool status,int kilometerDriven,int carId);
+
 
 }

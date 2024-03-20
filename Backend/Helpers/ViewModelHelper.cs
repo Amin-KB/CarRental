@@ -50,4 +50,16 @@ public static class ViewModelHelper
             }).ToList();
        
     }
+    public static Rental CreateRentalFromDto(RentalDto dto)
+    {
+        return new Rental()
+        {
+            RentalId = dto.RentalId,
+            CustomerId = dto.Customer.CustomerId,
+            CarId = dto.Car.CarId,
+            RentalDate = dto.RentalDate,
+            ReturnDate = dto.ReturnDate,
+            KilometersDriven = dto.KilometersDriven
+        };
+    }
 }

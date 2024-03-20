@@ -65,15 +65,7 @@ namespace Backend.Repositories
                 var entity = await DbSet.FirstOrDefaultAsync(x => x.CustomerId == customer.CustomerId);
                 if (entity != null)
                 {
-                    entity.FirstName = customer.FirstName;
-                    entity.LastName = customer.LastName;
-                    entity.Email = customer.Email;
-                    entity.Phone = customer.Phone;
-                    entity.Address = customer.Address;
-                    entity.City = customer.City;
-                    entity.Postal = customer.Postal;
-                    entity.Region = customer.Region;
-                    entity.Country = customer.Country;
+                    UpdateCustomerDetails(entity, customer);
 
                     return true;
                 }
@@ -86,5 +78,46 @@ namespace Backend.Repositories
                 return false;
             }
         }
+
+        /// <summary>
+        /// Updates the details of a customer entity with the provided customer details.
+        /// </summary>
+        /// <param name="entity">The customer entity to be updated.</param>
+        /// <param name="customer">The customer details containing the updated information.</param>
+        /// <remarks>
+        /// This method updates the various properties of the customer entity such as first name, last name,
+        /// email, phone number, address, city, postal code, region, and country based on the provided customer details.
+        /// </remarks>
+        private void UpdateCustomerDetails(Customer entity, Customer customer)
+        {
+            entity.FirstName = customer.FirstName;
+            entity.LastName = customer.LastName;
+            entity.Email = customer.Email;
+            entity.Phone = customer.Phone;
+            entity.Address = customer.Address;
+            entity.City = customer.City;
+            entity.Postal = customer.Postal;
+            entity.Region = customer.Region;
+            entity.Country = customer.Country;
+        }
+        public override async Task<bool> DeleteEntityAsync(int id)
+        {
+            try
+            {
+                var customer = await DbSet.FirstOrDefaultAsync(x => x.CustomerId == id);
+                if (customer != null)
+                {
+                    DbSet.Remove(customer);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
     }
 }
