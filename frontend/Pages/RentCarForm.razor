@@ -1,0 +1,106 @@
+﻿@page "/car/rent/{CarId:int}"
+@using frontend.Data.Contracts
+@using frontend.Models
+@using frontend.Pages.Components.Dialogs
+
+<MudContainer Class="mt-10" MaxWidth="MaxWidth.ExtraLarge">
+    <MudGrid>
+        @if (Car != null)
+        {
+            <MudItem sm="12">
+                <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.CarRental" ContentAlignment="HorizontalAlignment.Center">Car Id @CarId</MudAlert>
+
+                </MudItem>
+
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Make" Label="Brand" Variant="Variant.Outlined"></MudTextField>
+
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Model" Label="Model" Variant="Variant.Outlined"></MudTextField>
+
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Mileage" InputType="InputType.Number" Label="Milage" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Year" Label="Year" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>        
+           
+        }
+       
+
+    </MudGrid>
+    <MudDivider Class="mt-10" />
+    <MudGrid Class="mt-5">
+        <MudItem sm="6">
+            <MudText Typo="Typo.h6">Customer Data</MudText>
+        </MudItem>
+       
+        <MudItem sm="6">
+            <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="SelectCustomer">Select Customer</MudButton>
+        </MudItem>
+       
+        <MudItem sm="6">
+            <MudTextField @bind-Value="Customer.FirstName" ReadOnly="@readOnly" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="6">
+            <MudTextField @bind-Value="Customer.LastName" ReadOnly="@readOnly" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="6">
+            <MudTextField @bind-Value="Customer.Email" ReadOnly="@readOnly" InputType="InputType.Email" Label="Email" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="6">
+            <MudTextField @bind-Value="Customer.Phone" ReadOnly="@readOnly" InputType="InputType.Telephone" Label="Phone" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="8">
+            <MudTextField @bind-Value="Customer.Address" ReadOnly="@readOnly" InputType="InputType.Text" Label="Address" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="4">
+            <MudTextField @bind-Value="Customer.City" ReadOnly="@readOnly" InputType="InputType.Text" Label="City" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="4">
+            <MudTextField @bind-Value="Customer.Postal" ReadOnly="@readOnly" InputType="InputType.Text" Label="Postal" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="4">
+            <MudTextField @bind-Value="Customer.Region" ReadOnly="@readOnly" InputType="InputType.Text" Label="Region" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+        <MudItem sm="4">
+            <MudTextField @bind-Value="Customer.Country" ReadOnly="@readOnly" InputType="InputType.Text" Label="Country" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int CarId { get; set; }
+    [Inject]
+    public ICarsRepo CarRepo { get; set; }
+    [Inject]
+    public ICustomerRepo CustomerRepo { get; set; }
+    [Inject]
+    public IDialogService DialogService { get; set; }
+    bool readOnly = true;
+    public Customer Customer { get; set; } = new Customer();
+    public Car Car { get; set; }
+
+    private string value1, value2;
+    protected override async Task OnInitializedAsync()
+    {
+        Car =await CarRepo.GetCarByIdAsync(CarId);
+
+    }
+    async Task SelectCustomer()
+    {
+        var parameters = new DialogParameters<ChooseCustomerDialog>();
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<ChooseCustomerDialog>("Select Customer", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Customer =(Customer) result.Data;
+            StateHasChanged();
+        }
+    }
+}

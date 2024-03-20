@@ -33,5 +33,55 @@ namespace frontend.Data
             }
           
         }
+       public async Task<Customer> GetCustomerByIdAsync(int id)
+        {
+            try
+            {
+                var customers = await _httpClient.GetFromJsonAsync<Customer>($"Customer/{id}");
+                if (customers != null)
+                {
+                    return customers;
+                }
+                return null;
+
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+       public async Task<HttpResponseMessage> CreateCustomerAsync(Customer customer)
+        {
+            try
+            {
+                var result = await _httpClient.PostAsJsonAsync<Customer>("Customer", customer);
+                return result;
+
+
+
+            }
+            catch (Exception)
+            {
+
+                return new HttpResponseMessage(System.Net.HttpStatusCode.ServiceUnavailable);
+            }
+        }
+        public async Task<HttpResponseMessage> UpdateCustomerAsync(Customer customer)
+        {
+            try
+            {
+                var result = await _httpClient.PutAsJsonAsync<Customer>("Customer", customer);
+                return result;
+
+
+
+            }
+            catch (Exception)
+            {
+
+                return new HttpResponseMessage(System.Net.HttpStatusCode.ServiceUnavailable);
+            }
+        }
     }
 }

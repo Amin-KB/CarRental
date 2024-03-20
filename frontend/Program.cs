@@ -10,6 +10,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5202/api/") });
 
 builder.Services.AddSingleton<ICustomerRepo,CustomerRepo>();
+builder.Services.AddSingleton<ICarsRepo,CarRepo>();
 builder.Services.AddMudServices();
 
 

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "Backend\Backend.csproj", "{42F9FB35-22F8-4DF8-A098-97F9145AE50B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "frontend", "frontend\frontend.csproj", "{B79924D9-EE43-4496-9064-3A92EA58BFB1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{4390432E-B946-494D-9F5E-ABD9DFB44BE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42F9FB35-22F8-4DF8-A098-97F9145AE50B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42F9FB35-22F8-4DF8-A098-97F9145AE50B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42F9FB35-22F8-4DF8-A098-97F9145AE50B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42F9FB35-22F8-4DF8-A098-97F9145AE50B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B79924D9-EE43-4496-9064-3A92EA58BFB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B79924D9-EE43-4496-9064-3A92EA58BFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B79924D9-EE43-4496-9064-3A92EA58BFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B79924D9-EE43-4496-9064-3A92EA58BFB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4390432E-B946-494D-9F5E-ABD9DFB44BE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4390432E-B946-494D-9F5E-ABD9DFB44BE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4390432E-B946-494D-9F5E-ABD9DFB44BE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4390432E-B946-494D-9F5E-ABD9DFB44BE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9CC63850-9A7D-4509-B960-5CF224B7A355}
+	EndGlobalSection
+EndGlobal

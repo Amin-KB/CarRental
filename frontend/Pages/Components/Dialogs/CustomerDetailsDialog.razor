@@ -1,0 +1,80 @@
+﻿@using frontend.Data.Contracts
+@using frontend.Models
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            
+            Customer Info
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Customer.FirstName" ReadOnly="@readOnly" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Customer.LastName" ReadOnly="@readOnly" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Customer.Email" ReadOnly="@readOnly" InputType="InputType.Email" Label="Email" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Customer.Phone" ReadOnly="@readOnly" InputType="InputType.Telephone" Label="Phone" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="8">
+                <MudTextField @bind-Value="Customer.Address" ReadOnly="@readOnly" InputType="InputType.Text" Label="Address" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="4">
+                <MudTextField @bind-Value="Customer.City" ReadOnly="@readOnly" InputType="InputType.Text" Label="City" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="4">
+                <MudTextField @bind-Value="Customer.Postal" ReadOnly="@readOnly" InputType="InputType.Text" Label="Postal" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="4">
+                <MudTextField @bind-Value="Customer.Region" ReadOnly="@readOnly" InputType="InputType.Text" Label="Region" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="4">
+                <MudTextField @bind-Value="Customer.Country" ReadOnly="@readOnly" InputType="InputType.Text" Label="Country" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudSwitch @bind-Value="@readOnlySwitch" Color="Color.Secondary" />
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Info" Disabled="@readOnly" OnClick="async ()=>await UpdateAsync()">Edit</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [Inject]
+    public ICustomerRepo CustomerRepo { get; set; }
+    [Parameter]
+    public Customer Customer { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    bool readOnlySwitch = false;
+    bool readOnly => !readOnlySwitch;
+    protected override async Task OnInitializedAsync()
+    {
+      
+    }
+    async Task UpdateAsync()
+    {
+        var result = await CustomerRepo.UpdateCustomerAsync(Customer);
+        if (result.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Customer data updated", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+    private void Cancel()
+    {
+
+        MudDialog.Cancel();
+    }
+}

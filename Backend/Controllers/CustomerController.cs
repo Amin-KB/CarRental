@@ -33,10 +33,11 @@ namespace Backend.Controllers
             return Ok(custommer);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateAsync(CustomerDto dto)
+        public async Task<IActionResult> CreateAsync([FromBody]CustomerDto dto)
         {
             var customer = _mapper.Map<Customer>(dto);
             var result = await _unitOfWork.CustomerRepo.CreateEntityAsync(customer);
+            await _unitOfWork.CompleteAsync();
             return Ok(result);
         }
         [HttpPut]
@@ -44,6 +45,7 @@ namespace Backend.Controllers
         {
             var customer = _mapper.Map<Customer>(dto);
             var result = await _unitOfWork.CustomerRepo.UpdateEntityAsync(customer);
+            await _unitOfWork.CompleteAsync();
             return Ok(result);
         }
     }

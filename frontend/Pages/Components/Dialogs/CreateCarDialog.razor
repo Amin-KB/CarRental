@@ -1,0 +1,69 @@
+﻿@using frontend.Data.Contracts
+@using frontend.Helpers
+@using frontend.Models
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+            Add new Car
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Make" Label="Brand" Variant="Variant.Outlined"></MudTextField>
+
+
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Model" Label="Model" Variant="Variant.Outlined"></MudTextField>
+
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Mileage" InputType="InputType.Number" Label="Milage" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+            <MudItem sm="6">
+                <MudTextField @bind-Value="Car.Year"  Label="Year" Variant="Variant.Outlined"></MudTextField>
+            </MudItem>
+           
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Info" OnClick="async ()=>await AddAsync()">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+    [Inject]
+    public ICarsRepo CarRepo { get; set; }
+    public Car Car { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        Car = new Car();
+    }
+    async Task AddAsync()
+    {
+        
+        Car.CarId = IdGenerator.GenerateId(); 
+        var result = await CarRepo.CreateCarAsync(Car);
+        if (result.IsSuccessStatusCode)
+        {
+            Snackbar.Add("New Car Added", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+    private void Cancel()
+    {
+
+        MudDialog.Cancel();
+    }
+}

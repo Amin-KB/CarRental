@@ -1,0 +1,146 @@
+﻿@using frontend.Data
+@using frontend.Data.Contracts
+@using frontend.Models
+@using frontend.Pages.Components.Dialogs
+
+
+@if (Cars == null)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else
+{
+    <MudDataGrid T="Car" MultiSelection="true" Items="@Cars" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
+                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged" Height="720px">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">All Cars</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" aria-label="add" OnClick="AddCar"></MudIconButton>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="Customer" />
+            <PropertyColumn Property="x => x.Make" Title="Brand" Sortable="true" Filterable="true" />
+            <PropertyColumn Property="x => x.Model" Title="Model" Sortable="true" Filterable="true" />
+            <PropertyColumn Property="x => x.Year" Title="Year" Sortable="true" Filterable="true" />
+            <PropertyColumn Property="x => x.Mileage" Title="Mileage (K)"  Sortable="true" Filterable="true" />
+     
+            <TemplateColumn CellClass="d-flex justify-center" Filterable="false">
+                <CellTemplate>
+                    <MudStack Row>
+                     
+                    @if (context.Item.RentalStatus == false)
+                    {
+                        <MudChip Color="Color.Success">Available</MudChip>
+                       <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.CarRental" Color="Color.Secondary" OnClick="()=>Rent(context.Item.CarId)">Rent</MudButton>
+                    }
+                    else
+                    {
+                        <MudChip Color="Color.Error">Rented</MudChip>
+                            <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.CarRental" Disabled Color="Color.Secondary">Rent</MudButton>
+                    }
+             
+                     <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Details/Edit</MudButton>
+                 </MudStack>
+             </CellTemplate>
+         </TemplateColumn>
+     </Columns>
+     <PagerContent>
+         <MudDataGridPager T="Customer" />
+     </PagerContent>
+ </MudDataGrid>
+}
+
+
+
+
+@code {
+    [Inject]
+    public ICarsRepo CarRepo { get; set; }
+    [Inject]
+    public IDialogService DialogService { get; set; }
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    public IEnumerable<Car> Cars { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cars = await CarRepo.GetAllCarsAsync();
+    }
+
+    private string _searchString;
+    private string _search;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    // custom sort by name length
+    private Func<Customer, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.FirstName.Length;
+        else
+            return x.FirstName;
+    };
+    // quick filter - filter globally across multiple columns with the same input
+    private Func<Car, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Make.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Make.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+
+
+        return false;
+    };
+
+
+
+    // events
+    void RowClicked(DataGridRowClickEventArgs<Car> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<Car> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<Car> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+    void Rent(int carId)
+    {
+        NavigationManager.NavigateTo($"/car/rent/{carId}");
+    }
+    async Task AddCar()
+    {
+        var parameters = new DialogParameters<CreateCarDialog>();
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<CreateCarDialog>("Add Car", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Cars = await CarRepo.GetAllCarsAsync();
+            StateHasChanged();
+        }
+    }
+    // async void DetailAndEditCustomerDialog(Customer customer)
+    // {
+    //     var parameters = new DialogParameters<CustomerDetailsDialog> { { x => x.Customer, customer } };
+    //     DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
+    //     var options = new DialogOptions { CloseOnEscapeKey = true };
+    //     var dialog = await DialogService.ShowAsync<CustomerDetailsDialog>("Add Customer", parameters, options);
+    //     var result = await dialog.Result;
+    //     if (!result.Cancelled)
+    //     {
+    //         Customers = await CustomerRepo.GetAllCustomers();
+    //         StateHasChanged();
+    //     }
+    // }
+}

@@ -1,6 +1,7 @@
 ﻿@using frontend.Data
 @using frontend.Data.Contracts
 @using frontend.Models
+@using frontend.Pages.Components.Dialogs
 
 
 @if (Customers == null)
@@ -14,7 +15,7 @@ else
         <ToolBarContent>
             <MudText Typo="Typo.h6">Cutomers</MudText>
             <MudSpacer />
-            <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" aria-label="add"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary" aria-label="add" OnClick="AddCustomer"></MudIconButton>
         </ToolBarContent>
         <Columns>
             <SelectColumn T="Customer" />
@@ -26,8 +27,8 @@ else
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudStack Row>
-                     
-                     <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Details</MudButton>
+
+                     <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="()=>DetailAndEditCustomerDialog(context.Item)">Details/Edit</MudButton>
                  </MudStack>
              </CellTemplate>
          </TemplateColumn>
@@ -44,6 +45,8 @@ else
 @code {
     [Inject]
     public ICustomerRepo CustomerRepo { get; set; }
+    [Inject]
+    public IDialogService DialogService { get; set; }
 
     public IEnumerable<Customer> Customers { get; set; }
 
@@ -51,7 +54,7 @@ else
     {
         Customers = await CustomerRepo.GetAllCustomers();
     }
-    
+
     private string _searchString;
     private string _search;
     private bool _sortNameByLength;
@@ -76,19 +79,19 @@ else
         if (x.LastName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
 
-     
+
 
         return false;
     };
 
-    
+
 
     // events
     void RowClicked(DataGridRowClickEventArgs<Customer> args)
     {
         _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
     }
-    
+
     void RowRightClicked(DataGridRowClickEventArgs<Customer> args)
     {
         _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
@@ -97,5 +100,31 @@ else
     void SelectedItemsChanged(HashSet<Customer> items)
     {
         _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
+    async Task AddCustomer()
+    {
+        var parameters = new DialogParameters<CreateCustomerDialog>();
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog =await DialogService.ShowAsync<CreateCustomerDialog>("Add Customer", parameters,options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Customers = await CustomerRepo.GetAllCustomers();
+            StateHasChanged();
+        }
+    }
+    async void DetailAndEditCustomerDialog(Customer customer)
+    {
+        var parameters = new DialogParameters<CustomerDetailsDialog> { { x => x.Customer, customer } };
+        DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<CustomerDetailsDialog>("Add Customer", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Customers = await CustomerRepo.GetAllCustomers();
+            StateHasChanged();
+        }
     }
 }

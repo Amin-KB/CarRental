@@ -5,7 +5,7 @@ namespace Backend.Models.Dtos
     public class CustomerDto
     {
         [JsonProperty("customerId")]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
         [JsonProperty("firstName")]
         public string FirstName { get; set; } = null!;
         [JsonProperty("lastName")]
