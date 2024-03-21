@@ -4,6 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 .idea/.idea.Car_Rental/.idea
 /frontend/.idea/.idea.Car_Rental/.idea
+.idea/
+Car_Rental/.idea/
 # User-specific files
 *.rsuser
 *.suo

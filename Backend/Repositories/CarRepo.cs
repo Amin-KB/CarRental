@@ -1,4 +1,5 @@
-﻿using Backend.Contracts;
+﻿using System.Diagnostics;
+using Backend.Contracts;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,7 +44,7 @@ public class CarRepo:Repository<Car>,ICarRepo
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Debug.WriteLine(e);
             return false;
         }
     }
@@ -63,7 +64,7 @@ public class CarRepo:Repository<Car>,ICarRepo
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Debug.WriteLine(e);
             return false;
         }
     }
@@ -136,7 +137,7 @@ public class CarRepo:Repository<Car>,ICarRepo
             if (entity != null)
             {
                 entity.RentalStatus = status;
-                entity.Mileage = + kilometerDriven;
+                entity.Mileage =entity.Mileage+ kilometerDriven;
                 return true;
             }
             return false;
@@ -170,6 +171,25 @@ public class CarRepo:Repository<Car>,ICarRepo
         catch (Exception e)
         {
             Console.WriteLine(e);
+            return false;
+        }
+    }
+    
+    public override async Task<bool> DeleteEntityAsync(int id)
+    {
+        try
+        {
+            var car = await DbSet.FirstOrDefaultAsync(x => x.CarId == id);
+            if (car != null)
+            {
+                DbSet.Remove(car);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
             return false;
         }
     }

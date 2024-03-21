@@ -1,5 +1,6 @@
 ﻿using frontend.Data.Contracts;
 using frontend.Models;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 
@@ -30,7 +31,24 @@ namespace frontend.Data
                 return new HttpResponseMessage(System.Net.HttpStatusCode.ServiceUnavailable);
             }
         }
+        public async Task<IEnumerable<CarRentalHistory>> GetCarRentalHistoryAsync(int carId)
+        {
+            try
+            {
+                var history = await _httpClient.GetFromJsonAsync<IEnumerable<CarRentalHistory>>($"Car/rentalhistory/{carId}");
+                if (history != null)
+                {
+                    return history;
+                }
+                return Enumerable.Empty<CarRentalHistory>();
 
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return Enumerable.Empty<CarRentalHistory>();
+            }
+        }
         public async Task<IEnumerable<Car>> GetAllCarsAsync()
         {
             try

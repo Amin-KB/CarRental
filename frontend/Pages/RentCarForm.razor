@@ -13,7 +13,7 @@
 
                 </MudItem>
             <MudItem sm="8">
-                <MudDatePicker Label="Basic example" @bind-Date="Rental.RentalDate" />
+                <MudDatePicker Label="Rental Date" @bind-Date="Rental.RentalDate" />
 
             </MudItem>
             <MudItem sm="6">
@@ -72,8 +72,11 @@
         <MudItem sm="4">
             <MudTextField @bind-Value="Customer.Country" ReadOnly="@readOnly" InputType="InputType.Text" Label="Country" Variant="Variant.Outlined"></MudTextField>
         </MudItem>
+        <MudItem sm="12">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="RentAsync">Rent</MudButton>
+        </MudItem>
     </MudGrid>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="RentAsync">Rent</MudButton>
+   
 </MudContainer>
 
 @code {
@@ -85,6 +88,10 @@
     public IRentRepo RentRepo { get; set; }
     [Inject]
     public ICustomerRepo CustomerRepo { get; set; }
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    [Inject] 
+    ISnackbar Snackbar { get; set; }
     [Inject]
     public IDialogService DialogService { get; set; }
     bool readOnly = true;
@@ -116,7 +123,18 @@
         Rental.RentalId = Helpers.IdGenerator.GenerateId();
         Rental.Car = Car;
         Rental.Customer =Customer;
-        await RentRepo.RentCarAsync(Rental);
+        var response=  await RentRepo.RentCarAsync(Rental);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Car rented", Severity.Success);
+            NavigationManager.NavigateTo("/allcars");
+
+        }
+        else
+        {
+            Snackbar.Add("Something went wrong", Severity.Error);
+         
+        }
     }
 
 }

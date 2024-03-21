@@ -11,7 +11,7 @@
 else
 {
     <MudDataGrid T="Customer" MultiSelection="true" Items="@Customers" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
-                 Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged" Height="720px">
+         Height="720px">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Cutomers</MudText>
             <MudSpacer />
@@ -28,7 +28,7 @@ else
                 <CellTemplate>
                     <MudStack Row>
 
-                     <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="()=>DetailAndEditCustomerDialog(context.Item)">Details/Edit</MudButton>
+                     <MudButton Size="@Size.Small" Variant="@Variant.Text" Color="@Color.Primary" OnClick="()=>DetailAndEditCustomerDialog(context.Item)">Details/Edit</MudButton>
                  </MudStack>
              </CellTemplate>
          </TemplateColumn>
@@ -85,22 +85,6 @@ else
     };
 
 
-
-    // events
-    void RowClicked(DataGridRowClickEventArgs<Customer> args)
-    {
-        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
-
-    void RowRightClicked(DataGridRowClickEventArgs<Customer> args)
-    {
-        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
-
-    void SelectedItemsChanged(HashSet<Customer> items)
-    {
-        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
-    }
     async Task AddCustomer()
     {
         var parameters = new DialogParameters<CreateCustomerDialog>();
@@ -119,7 +103,7 @@ else
         var parameters = new DialogParameters<CustomerDetailsDialog> { { x => x.Customer, customer } };
         DialogOptions maxWidth = new DialogOptions() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        var dialog = await DialogService.ShowAsync<CustomerDetailsDialog>("Add Customer", parameters, options);
+        var dialog = await DialogService.ShowAsync<CustomerDetailsDialog>("Edit and Detail Customer", parameters, options);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {

@@ -13,7 +13,8 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<CarRentalContext>(opttions => opttions.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<CarRentalContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

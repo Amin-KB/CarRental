@@ -4,6 +4,9 @@ CREATE DATABASE CarRental
 
 GO
 
+USE CarRental
+
+GO
 CREATE TABLE Customers
 (
 CustomerID INT PRIMARY KEY IDENTITY(1,1),
@@ -18,7 +21,9 @@ Region NVARCHAR(20),
 Country NVARCHAR(20),
 )
 
-
+CREATE INDEX IX_Customers_Id ON Customers (CustomerID);
+CREATE INDEX IX_Customers_Email ON Customers (Email);
+CREATE INDEX IX_Customers_Phone ON Customers (Phone);
 GO
 
 CREATE TABLE Cars (
@@ -32,7 +37,9 @@ CREATE TABLE Cars (
 
 
 GO
-
+CREATE INDEX IX_Cars_Make ON Cars (Make);
+CREATE INDEX IX_Cars_Model ON Cars (Model);
+GO
 CREATE TABLE Rentals (
     RentalID INT PRIMARY KEY,
     CustomerID INT,
@@ -45,7 +52,11 @@ CREATE TABLE Rentals (
 );
 
 GO
-
+CREATE INDEX IX_Rentals_CustomerID ON Rentals (CustomerID);
+CREATE INDEX IX_Rentals_CarID ON Rentals (CarID);
+CREATE INDEX IX_Rentals_RentalDate ON Rentals (RentalDate);
+CREATE INDEX IX_Rentals_ReturnDate ON Rentals (ReturnDate);
+GO
 CREATE TABLE RentedCars (
     RentalID INT,
     CarID INT,

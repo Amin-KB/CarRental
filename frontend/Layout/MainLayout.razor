@@ -1,17 +1,20 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Home" Color="Color.Inherit" Edge="Edge.End" />
+        <MudToggleIconButton @bind-Toggled="@_isDarkMode"
+                             Icon="@Icons.Material.Filled.DarkMode" Title="Off"
+                             ToggledIcon="@Icons.Material.Filled.LightMode"  ToggledTitle="On" />
+        <MudIconButton Icon="@Icons.Material.Filled.Home" Color="Color.Inherit" Edge="Edge.End" OnClick="GoToHome" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h5" Class="mt-1">Application</MudText>
+            <MudText Typo="Typo.h6" Class="mt-1">Rental Car Company</MudText>
         </MudDrawerHeader>
         <NavMenu/>
     </MudDrawer>
@@ -21,7 +24,14 @@
 </MudLayout>
 @code {
     bool _drawerOpen = true;
-
+    private MudTheme _theme = new();
+    private bool _isDarkMode;
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    void GoToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;

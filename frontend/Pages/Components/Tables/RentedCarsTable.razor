@@ -15,8 +15,16 @@
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudStack Row>
-
-                     <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="()=>ReturnDialog(context.Item)">Return</MudButton>
+                        @if
+                       (context.Item.ReturnDate!=null)
+                        {
+                            <MudChip Color="Color.Info">Returned on @Helpers.Format.FormatDate((DateTime)context.Item.RentalDate)  </MudChip>
+                        }
+                        else
+                        {
+                            <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="()=>ReturnDialog(context.Item)">Return</MudButton>
+                        }
+                   
                  </MudStack>
              </CellTemplate>
          </TemplateColumn>

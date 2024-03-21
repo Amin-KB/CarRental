@@ -1,4 +1,5 @@
-﻿using Backend.Contracts;
+﻿using System.Diagnostics;
+using Backend.Contracts;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -114,7 +115,7 @@ namespace Backend.Repositories
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
                 return false;
             }
         }

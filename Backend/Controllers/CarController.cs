@@ -27,6 +27,21 @@ public class CarController : ControllerBase
         var cars = _mapper.Map<List<CarDto>>(data);
         return Ok(cars);
     }
+    [HttpGet("rentalhistory/{carId}")]
+    public async Task<IActionResult> RentalHistory(int carId)
+    {
+        _logger.LogInformation($"Getting rental history for Car with ID {carId}");
+        var carRentalHistoriesEntity=await _unitOfWork.RentRepo.GetCarRentalHistory(carId);
+        if (carRentalHistoriesEntity != null)
+        {
+            _logger.LogInformation($"Found rental history for Car with ID {carId}" );
+            return Ok(carRentalHistoriesEntity);
+        }
+        _logger.LogWarning($"No rental history found for Car with ID {carId}");
+        return NotFound();
+
+
+    }
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(int id)
     {
@@ -70,5 +85,19 @@ public class CarController : ControllerBase
         await _unitOfWork.CompleteAsync();
         _logger.LogInformation(" car with id {id} has been updated");
         return Ok(result);
+    }
+    [HttpDelete("{carId}")]
+    public async Task<IActionResult> DeleteAsync(int carId)
+    {
+        _logger.LogInformation($"Deleting car with ID {carId}.");
+        var result = await _unitOfWork.CarRepo.DeleteEntityAsync(carId);
+        if (result)
+        {
+            await _unitOfWork.CompleteAsync();
+            _logger.LogInformation($"Deleting car with ID {carId} was successful");
+            return Ok(result);
+        }
+        _logger.LogWarning($"Deleting car with ID {carId} was not successful");
+        return BadRequest();
     }
 }

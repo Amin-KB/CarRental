@@ -72,6 +72,35 @@ public class RentRepo : IRentRepo
         return rentHistory;
     }
 
+    public async Task<List<CarRentalHistory>> GetCarRentalHistory(int carId)
+    {
+        List<CarRentalHistory> rentHistory = await _dbContext.Rentals
+            .Where(x => x.CarId == carId)
+            .Select(rental => new CarRentalHistory
+            {
+                RentalId = rental.RentalId,
+                CarId = (int)rental.CarId,
+                RentalDate = rental.RentalDate,
+                ReturnDate = rental.ReturnDate,
+                KilometersDriven = rental.KilometersDriven,
+
+                Customer = new CustomerDto
+                {
+                    CustomerId = (int)rental.CustomerId,
+                    FirstName = rental.Customer.FirstName,
+                    LastName = rental.Customer.LastName,
+                    Email = rental.Customer.Email,
+                    Phone = rental.Customer.Phone,
+                    Address = rental.Customer.Address,
+                    City = rental.Customer.City,
+                    Postal = rental.Customer.Postal,
+                    Region = rental.Customer.Region,
+                    Country = rental.Customer.Country
+                }
+            }).ToListAsync();
+        return rentHistory;
+    }
+
     public async Task<List<RentalDto>> GetRentedCarsAsync()
     {
         return await Helpers.ViewModelHelper.MapRentalDto(_dbContext);
@@ -103,4 +132,6 @@ public class RentRepo : IRentRepo
             return false;
         }
     }
+
+   
 }

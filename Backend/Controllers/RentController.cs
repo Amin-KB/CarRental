@@ -27,7 +27,7 @@ public class RentController : ControllerBase
         _logger.LogInformation($"{rentedCars.Count()} rented cars has been found ");
         return Ok(rentedCars);
     }
-
+  
     [HttpPost]
     public async Task<IActionResult> RentAsync([FromBody] RentalDto dto)
     {

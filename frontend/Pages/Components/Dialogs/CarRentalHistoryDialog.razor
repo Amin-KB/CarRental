@@ -1,0 +1,105 @@
+﻿@using frontend.Data.Contracts
+@using frontend.Helpers
+@using frontend.Models
+<MudDialog Style="min-width: 1240px;min-height:720px">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+            Rental History @Car.Make @Car.Model ID: @Car.CarId
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (CarRentalHistories == null)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        }
+        else
+        {
+            <MudDataGrid T="CarRentalHistory" MultiSelection="true" Items="@CarRentalHistories" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
+                         Height="720px">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Cutomers</MudText>
+                    <MudSpacer />
+                </ToolBarContent>
+                <Columns>
+                    <SelectColumn T="CarRentalHistory" />
+                    <PropertyColumn Property="x => x.RentalId" Title="Rental Id" Sortable="true" Filterable="true" />
+                    <PropertyColumn Property="x => x.RentalDate" Title="Rental Date" Sortable="true" Filterable="true" />
+                    <PropertyColumn Property="x => x.ReturnDate" Title="ReturnDate" SortBy="@_sortBy" Sortable="true" Filterable="true" />
+                    <PropertyColumn Property="x => x.KilometersDriven" Title="Kilometers Driven" SortBy="@_sortBy" Sortable="true" Filterable="true" />
+                    <PropertyColumn Property="x => x.Customer.Email" Title="Customer Email" SortBy="@_sortBy" Sortable="true" Filterable="true" />
+
+                  
+                   
+             </Columns>
+             <PagerContent>
+                 <MudDataGridPager T="CarRentalHistory" />
+             </PagerContent>
+         </MudDataGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Inject] ISnackbar Snackbar { get; set; }
+
+
+
+
+    private void Cancel()
+    {
+
+        MudDialog.Cancel();
+    }
+
+    [Inject]
+    public ICarsRepo CarRepo { get; set; }
+    [Inject]
+    public IDialogService DialogService { get; set; }
+    [Parameter]
+    public Car Car { get; set; }
+    public IEnumerable<CarRentalHistory> CarRentalHistories { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CarRentalHistories = await CarRepo.GetCarRentalHistoryAsync(Car.CarId);
+    }
+
+    private string _searchString;
+    private string _search;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    // custom sort by name length
+    private Func<CarRentalHistory, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.Customer.Email.Length;
+        else
+            return x.Customer;
+    };
+    // quick filter - filter globally across multiple columns with the same input
+    private Func<CarRentalHistory, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Customer.Email.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Customer.LastName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+
+
+        return false;
+    };
+   
+
+
+
+}

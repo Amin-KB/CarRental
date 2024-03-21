@@ -40,4 +40,13 @@ public interface IRentRepo
     /// <param name="customerId">The unique identifier of the customer.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of CustomerRentHistory objects representing the rental history of the customer.</returns>
     Task<List<CustomerRentHistory>> GetCustomerRentalHistory(int customerId);
+
+    /// <summary>
+    /// Retrieves the rental history of a car with the specified car ID.
+    /// </summary>
+    /// <param name="carId">The ID of the car for which to retrieve the rental history.</param> <returns>A task representing the asynchronous operation.
+    /// The task result contains a list of CarRentalHistory objects representing the rental history of the car.
+    /// </returns>
+    /// /
+    Task<List<CarRentalHistory>> GetCarRentalHistory(int carId);
 }

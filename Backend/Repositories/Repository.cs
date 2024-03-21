@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public abstract class Repository<T> : IRepository<T> where T : class
     {
         protected CarRentalContext _dbContext;
         internal DbSet<T> DbSet { get; set; }
