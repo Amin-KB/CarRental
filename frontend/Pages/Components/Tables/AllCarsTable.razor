@@ -62,20 +62,21 @@ else
 
 
 @code {
+
+    #region Inject
+
     [Inject]
     public ICarsRepo CarRepo { get; set; }
     [Inject]
     public IDialogService DialogService { get; set; }
     [Inject]
     NavigationManager NavigationManager { get; set; }
-    public IEnumerable<Car> Cars { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        Cars = await CarRepo.GetAllCarsAsync();
-        data[0] = Cars.Where(x => x.RentalStatus == true).Count();
-        data[1] = Cars.Where(x => x.RentalStatus == false).Count();
-    }
+    #endregion
+
+
+    #region Properties and Fields
+    public IEnumerable<Car> Cars { get; set; }
     double rentedCarCount = 0;
     double availableCarCount = 0;
     public double[] data = { 0, 0 };
@@ -84,6 +85,18 @@ else
     private string _search;
     private bool _sortNameByLength;
     private List<string> _events = new();
+
+    #endregion
+
+    #region Methods
+
+     protected override async Task OnInitializedAsync()
+    {
+        Cars = await CarRepo.GetAllCarsAsync();
+        data[0] = Cars.Where(x => x.RentalStatus == true).Count();
+        data[1] = Cars.Where(x => x.RentalStatus == false).Count();
+    }
+
     // custom sort by name length
     private Func<Customer, object> _sortBy => x =>
     {
@@ -103,8 +116,7 @@ else
 
         if (x.Make.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-
-
+        
 
         return false;
     };
@@ -142,4 +154,7 @@ else
             StateHasChanged();
         }
     }
+
+    #endregion
+   
 }

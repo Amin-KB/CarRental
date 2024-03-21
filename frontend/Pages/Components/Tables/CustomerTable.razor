@@ -43,22 +43,33 @@ else
 
 
 @code {
+
+    #region Inject
+
     [Inject]
     public ICustomerRepo CustomerRepo { get; set; }
     [Inject]
     public IDialogService DialogService { get; set; }
 
+    #endregion
+
+    #region Properties and Fields
+
     public IEnumerable<Customer> Customers { get; set; }
+    private string _searchString;
+    private string _search;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    #endregion
+
+    #region Methods
 
     protected override async Task OnInitializedAsync()
     {
         Customers = await CustomerRepo.GetAllCustomers();
     }
 
-    private string _searchString;
-    private string _search;
-    private bool _sortNameByLength;
-    private List<string> _events = new();
+ 
     // custom sort by name length
     private Func<Customer, object> _sortBy => x =>
     {
@@ -111,4 +122,7 @@ else
             StateHasChanged();
         }
     }
+
+    #endregion
+    
 }

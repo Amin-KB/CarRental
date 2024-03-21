@@ -6,43 +6,57 @@
 {
     <MudDataGrid Items="@Cars" T="Rental">
         <Columns>
-            <PropertyColumn Property="x => x.RentalId" Title="RentalId" />
-            <PropertyColumn Property="x => x.RentalDate" Title="Rent Date" />
-            <PropertyColumn Property="x => x.Car.Model" Title="Car Model" />
-            <PropertyColumn Property="x => x.Customer.FirstName" Title="Customer First Name" />
-            <PropertyColumn Property="x => x.Customer.LastName" Title="Customer Last Name" />
-            <PropertyColumn Property="x => x.Customer.Email" Title="Customer Email" />
+            <PropertyColumn Property="x => x.RentalId" Title="RentalId"/>
+            <PropertyColumn Property="x => x.RentalDate" Title="Rent Date"/>
+            <PropertyColumn Property="x => x.Car.Model" Title="Car Model"/>
+            <PropertyColumn Property="x => x.Customer.FirstName" Title="Customer First Name"/>
+            <PropertyColumn Property="x => x.Customer.LastName" Title="Customer Last Name"/>
+            <PropertyColumn Property="x => x.Customer.Email" Title="Customer Email"/>
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudStack Row>
                         @if
-                       (context.Item.ReturnDate!=null)
+                            (context.Item.ReturnDate != null)
                         {
-                            <MudChip Color="Color.Info">Returned on @Helpers.Format.FormatDate((DateTime)context.Item.RentalDate)  </MudChip>
+                            <MudChip Color="Color.Info">Returned on @Helpers.Format.FormatDate((DateTime)context.Item.RentalDate) </MudChip>
                         }
                         else
                         {
-                            <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="()=>ReturnDialog(context.Item)">Return</MudButton>
+                            <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" OnClick="() => ReturnDialog(context.Item)">Return</MudButton>
                         }
-                   
-                 </MudStack>
-             </CellTemplate>
-         </TemplateColumn>
-     </Columns>
- </MudDataGrid>
+
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Rental"/>
+        </PagerContent>
+    </MudDataGrid>
 }
 
 
 @code {
-    [Inject]
-    public IRentRepo RentRepo { get; set; }
+
+    #region Inject
+    [Inject] public IRentRepo RentRepo { get; set; }
+    [Inject] public IDialogService DialogService { get; set; }
+
+    #endregion
+
+    #region Properties and Fields
+
     public IEnumerable<Rental> Cars { get; set; } = new List<Rental>();
-    [Inject]
-    public IDialogService DialogService { get; set; }
+
+    #endregion
+
+    #region Methods
+
     protected override async Task OnInitializedAsync()
     {
         Cars = await RentRepo.GetAllRentedCarsAsync();
     }
+
     async void ReturnDialog(Rental rental)
     {
         var parameters = new DialogParameters<ReturnCarDialog> { { x => x.Rental, rental } };
@@ -56,4 +70,9 @@
             StateHasChanged();
         }
     }
+
+    #endregion
+
+    
+
 }

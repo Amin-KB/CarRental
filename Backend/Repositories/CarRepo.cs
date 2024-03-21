@@ -25,6 +25,8 @@ public class CarRepo:Repository<Car>,ICarRepo
     /// </summary>
     /// <param name="id">The id of the car entity to retrieve.</param>
     /// <returns>The car entity with the specified id, or null if not found.</returns>
+    ///
+
     public override async Task<Car> GetEntityByIdAsync(int id)
     {
         return await DbSet.FirstOrDefaultAsync(x => x.CarId == id);

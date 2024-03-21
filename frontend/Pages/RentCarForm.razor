@@ -82,6 +82,8 @@
 @code {
     [Parameter]
     public int CarId { get; set; }
+
+    #region Inject
     [Inject]
     public ICarsRepo CarRepo { get; set; }
     [Inject]
@@ -94,16 +96,24 @@
     ISnackbar Snackbar { get; set; }
     [Inject]
     public IDialogService DialogService { get; set; }
+    
+
+    #endregion
+
+    #region Properties and Fields
+
     bool readOnly = true;
     public Customer Customer { get; set; } = new Customer();
     public Car Car { get; set; }
     public Rental Rental { get; set; } = new Rental();
 
-    private string value1, value2;
+    #endregion
+ 
+
+
     protected override async Task OnInitializedAsync()
     {
         Car =await CarRepo.GetCarByIdAsync(CarId);
-
     }
     async Task SelectCustomer()
     {
