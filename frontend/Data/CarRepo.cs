@@ -93,7 +93,7 @@ namespace frontend.Data
             try
             {
                 var car = await _httpClient.GetFromJsonAsync<Car>($"Car/{id}");
-                if (car != null)
+                if (car == null)
                     return null;
                 else
                     return car;
